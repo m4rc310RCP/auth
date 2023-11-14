@@ -1,0 +1,17 @@
+package br.com.m4rc310.auth.graphql.services;
+
+import org.springframework.stereotype.Service;
+
+import br.com.m4rc310.auth.graphql.MConst;
+import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
+
+@Service
+@GraphQLApi
+public class AuthService implements MConst {
+	
+	@GraphQLQuery(name = "test")
+	public String test() {
+		return "OK";
+	}
+}
