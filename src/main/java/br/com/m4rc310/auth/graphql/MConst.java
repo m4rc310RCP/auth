@@ -15,6 +15,7 @@ public interface MConst {
 	public static final String DESC$query_version                      = "${desc.query.version}";
 	public static final String DESC$subscription_request_resgister_pos = "${desc.subscription.request.resgister.pos}";
 	public static final String DTO$register                            = "${dto.register}";
+	public static final String ERROR$access_unauthorized               = "${error.access.unauthorized}";
 	public static final String ERROR$invalid_code_register             = "${error.invalid.code.register}";
 	public static final String IDENTIFY$device                         = "${identify.device}";
 	public static final String INDICATOR$valid                         = "${indicator.valid}";
