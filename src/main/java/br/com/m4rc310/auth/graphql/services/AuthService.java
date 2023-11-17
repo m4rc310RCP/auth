@@ -16,4 +16,5 @@ public class AuthService implements MConst {
 	public String test() {
 		return "OK";
 	}
+	
 }
