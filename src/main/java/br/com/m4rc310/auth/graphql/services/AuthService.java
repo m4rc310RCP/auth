@@ -11,7 +11,7 @@ import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 @GraphQLApi
 public class AuthService implements MConst {
 	
-	@MAuth(rolesRequired = "ADMIN")
+	@MAuth(rolesRequired = "CLIENT")
 	@GraphQLQuery(name = "test")
 	public String test() {
 		return "OK";
