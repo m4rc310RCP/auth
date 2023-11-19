@@ -36,5 +36,4 @@ public class Registry implements Serializable, MConst{
 	@Column(name = "${date.transaction}")
 	@GraphQLQuery(name = "${date.transaction}")
 	private Date dateTransaction;
-
 }
