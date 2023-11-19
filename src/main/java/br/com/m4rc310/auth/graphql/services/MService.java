@@ -8,9 +8,14 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import br.com.m4rc310.auth.graphql.MConst;
 import br.com.m4rc310.auth.graphql.MEnumError;
 import foundation.cmo.opensales.graphql.messages.i18n.M;
+import foundation.cmo.opensales.graphql.security.MGraphQLJwtService;
 import foundation.cmo.opensales.graphql.services.MFluxService;
 
 public class MService implements MConst {
@@ -19,9 +24,17 @@ public class MService implements MConst {
 	protected MFluxService fluxService;
 	
 	@Autowired
+	protected MGraphQLJwtService jwt;
+	
+	@Autowired
 	protected M m;
 	
 	protected String sa;
+	
+	protected <T> T fromJson(String json, Class<T> type) throws JsonMappingException, JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		return mapper.readValue(json, type);
+	}
 	
 	protected Exception getException(String message, Object... args) {
 		return new Exception(m.getString(message, args));
