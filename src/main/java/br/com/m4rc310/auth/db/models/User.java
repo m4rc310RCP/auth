@@ -5,6 +5,8 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 import br.com.m4rc310.auth.graphql.MConst;
 import io.leangen.graphql.annotations.GraphQLIgnore;
@@ -15,7 +17,7 @@ import lombok.Data;
 @Data
 @Entity(name = MConst.TYPE$auth_user)
 @GraphQLType(name = MConst.TYPE$auth_user, description = MConst.DESC$type_auth_user)
-public class User implements Serializable, MConst {
+public class User implements Serializable, MConst, IRegistry {
 	
 	private static final long serialVersionUID = 1568396898330354858L;
 
@@ -27,4 +29,9 @@ public class User implements Serializable, MConst {
 	@Column(name = DESCRIPTION$password)
 	@GraphQLIgnore
 	private String password;
+	
+	@OneToOne
+	@JoinColumn(name = "${code.registry}")
+	@GraphQLIgnore
+	private Registry registry;
 }

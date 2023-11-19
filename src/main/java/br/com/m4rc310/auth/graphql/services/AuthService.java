@@ -8,7 +8,11 @@ import br.com.m4rc310.auth.db.models.User;
 import br.com.m4rc310.auth.graphql.MConst;
 import foundation.cmo.opensales.graphql.mappers.annotations.MDate;
 import foundation.cmo.opensales.graphql.security.MAuth;
+import foundation.cmo.opensales.graphql.security.MAuthToken;
+import foundation.cmo.opensales.graphql.security.dto.MUser;
+import foundation.cmo.opensales.graphql.security.dto.MUserDetails;
 import io.leangen.graphql.annotations.GraphQLArgument;
+import io.leangen.graphql.annotations.GraphQLContext;
 import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
@@ -40,6 +44,13 @@ public class AuthService extends MService implements MConst {
 		user.setPassword(password);
 		
 		return user;
+	}
+	
+	@GraphQLQuery(name = "${code.access.token}")
+	public String getAccessToken(@GraphQLContext User user) {
+		MUser u = new MUser();
+		u.setUsername(user.getUsername());
+		return jwt.generateToken(MUserDetails.from(u));
 	}
 	
 }

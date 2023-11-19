@@ -12,10 +12,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.m4rc310.auth.db.models.User;
 import br.com.m4rc310.auth.graphql.MConst;
 import br.com.m4rc310.auth.graphql.MEnumError;
 import foundation.cmo.opensales.graphql.messages.i18n.M;
 import foundation.cmo.opensales.graphql.security.MGraphQLJwtService;
+import foundation.cmo.opensales.graphql.security.dto.MUser;
 import foundation.cmo.opensales.graphql.services.MFluxService;
 
 public class MService implements MConst {
@@ -66,5 +68,12 @@ public class MService implements MConst {
 		}
 	}
 
+	protected User userAuth() {
+		MUser authenticatedUser = fluxService.authenticatedUser();
+		
+		User user = new User();
+		user.setUsername(authenticatedUser.getUsername());	
+		return user;
+		}
 	
 }

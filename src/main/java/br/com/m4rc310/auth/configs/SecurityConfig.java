@@ -47,6 +47,7 @@ public class SecurityConfig implements IMAuthUserProvider, MConst {
 	@Cacheable(cacheNames = "user", key = "#token")
 	public MUser loadUser(MGraphQLJwtService jwt, MEnumToken type, String token) throws MException {
 
+		String username;
 		switch (type) {
 		case TEST:
 			int i = token.indexOf(":");
@@ -73,12 +74,12 @@ public class SecurityConfig implements IMAuthUserProvider, MConst {
 				e.printStackTrace();
 			}
 		case BEARER:
-//			username = jwt.extractUsername(token);
-//			user = getUserFromUsername(username);
-//			if (!isValidUser(user)) {
-//				throw MException.get(402,  ERROR$access_unauthorized);
-//			}
-//			return user;
+			username = jwt.extractUsername(token);
+			user = getUserFromUsername(username);
+			if (!isValidUser(user)) {
+				throw MException.get(402,  ERROR$access_unauthorized);
+			}
+			return user;
 		default:
 			break;
 		}
