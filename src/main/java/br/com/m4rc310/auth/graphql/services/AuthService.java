@@ -68,7 +68,7 @@ public class AuthService extends MService implements MConst {
 	public Publisher<RequestDeviceRegister> requestRegisterDevice() {
 		String code = getRandomNumber(5);
 		String id = String.format("%s_%s", FLUX_REGISTER_DEVICE, code);
-		RequestDeviceRegister resp = getRequestDeviceRegister(id);
+		RequestDeviceRegister resp = getRequestDeviceRegister(code);
 		return fluxService.publish(RequestDeviceRegister.class, id, resp);
 	}
 	
@@ -88,9 +88,9 @@ public class AuthService extends MService implements MConst {
 		String id = String.format("%s_%s", FLUX_REGISTER_DEVICE, code);
 		
 		if (fluxService.inPublish(RequestDeviceRegister.class, id)) {
-			RequestDeviceRegister register = getRequestDeviceRegister(id);
+			RequestDeviceRegister register = getRequestDeviceRegister(code);
 			fluxService.callPublish(RequestDeviceRegister.class, id, register);
-			resetCache(id);
+			resetCache(code);
 			return register;
 		}
 		
