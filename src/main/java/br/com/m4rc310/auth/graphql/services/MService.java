@@ -70,6 +70,9 @@ public class MService implements MConst {
 
 	protected User userAuth() {
 		MUser authenticatedUser = fluxService.authenticatedUser();
+		if (authenticatedUser==null) {
+			return null;
+		}
 		
 		User user = new User();
 		user.setUsername(authenticatedUser.getUsername());	
