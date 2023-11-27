@@ -14,10 +14,10 @@ import lombok.Data;
 public class RequestDeviceRegister implements MConst {
 	@GraphQLQuery(name = CODE$request)
 	@JsonProperty("request_code")
-	public String code;
+	private String code;
 	
 	@GraphQLQuery(name = IDENTIFY$device)
 	@JsonProperty("device_id")
-	public String deviceId;
+	private String deviceId;
 	
 }
