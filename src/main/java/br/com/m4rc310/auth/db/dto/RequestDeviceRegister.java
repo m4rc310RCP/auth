@@ -1,9 +1,12 @@
 package br.com.m4rc310.auth.db.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import br.com.m4rc310.auth.db.models.User;
 import br.com.m4rc310.auth.graphql.MConst;
+import io.leangen.graphql.annotations.GraphQLIgnore;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.annotations.types.GraphQLType;
 import lombok.Data;
@@ -19,5 +22,9 @@ public class RequestDeviceRegister implements MConst {
 	@GraphQLQuery(name = IDENTIFY$device)
 	@JsonProperty("device_id")
 	private String deviceId;
+	
+	@GraphQLIgnore
+	@JsonIgnore
+	private User userRegister;
 	
 }

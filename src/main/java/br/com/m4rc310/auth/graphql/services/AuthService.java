@@ -5,6 +5,9 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.reactivestreams.Publisher;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import br.com.m4rc310.auth.db.dto.RequestDeviceRegister;
@@ -59,16 +62,52 @@ public class AuthService extends MService implements MConst {
 		return jwt.generateToken(MUserDetails.from(u));
 	}
 	
+	//=========================
+	
 	@GraphQLSubscription(name = SUBSCRIPTION$device_register)
 	public Publisher<RequestDeviceRegister> requestRegisterDevice() {
 		String code = getRandomNumber(5);
 		String id = String.format("%s_%s", FLUX_REGISTER_DEVICE, code);
-		
-		RequestDeviceRegister resp = new RequestDeviceRegister();
-		resp.setCode(code);
-		
+		RequestDeviceRegister resp = getRequestDeviceRegister(id);
 		return fluxService.publish(RequestDeviceRegister.class, id, resp);
 	}
+	
+	@GraphQLQuery(name = NAME$username)
+	public String getUsernameRegister(@GraphQLContext RequestDeviceRegister rdr) {
+		try {
+			User user = rdr.getUserRegister();
+			return user.getUsername();			
+		} catch (Exception e) {
+			return "";
+		}
+	}
+	
+	@GraphQLMutation(name = MUTATION$confirm_register_device)
+	public RequestDeviceRegister confirmRequestDeviceRegister(@GraphQLArgument(name = CODE$request) String code) throws Exception {
+		
+		String id = String.format("%s_%s", FLUX_REGISTER_DEVICE, code);
+		
+		if (fluxService.inPublish(RequestDeviceRegister.class, id)) {
+			RequestDeviceRegister register = getRequestDeviceRegister(id);
+			fluxService.callPublish(RequestDeviceRegister.class, id, register);
+			resetCache(id);
+			return register;
+		}
+		
+		return null;
+	}
+	
+	@Cacheable(value = "device_request", key = "#code")
+	private RequestDeviceRegister getRequestDeviceRegister(String code) {
+		RequestDeviceRegister resp = new RequestDeviceRegister();
+		resp.setCode(code);
+		resp.setUserRegister(userAuth());
+		return resp;
+	}
+	
+	@CacheEvict(value = "device_request", key = "#code")
+	private void resetCache(String code) {}
+	
 	
 	private String getRandomNumber(int length) {
         return new Random()
@@ -78,5 +117,6 @@ public class AuthService extends MService implements MConst {
                 .collect(Collectors.joining());
     }
 	
+	//=========================
 	
 }
