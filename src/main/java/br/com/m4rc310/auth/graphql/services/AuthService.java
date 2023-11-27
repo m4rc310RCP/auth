@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.reactivestreams.Publisher;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 import br.com.m4rc310.auth.db.dto.RequestDeviceRegister;
@@ -26,6 +26,7 @@ import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 
 @Service
 @GraphQLApi
+@EnableCaching
 public class AuthService extends MService implements MConst {
 	
 	private static final String FLUX_REGISTER_DEVICE = "flux_gegister_device";
