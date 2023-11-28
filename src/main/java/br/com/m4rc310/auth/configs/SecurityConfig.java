@@ -35,7 +35,7 @@ public class SecurityConfig implements IMAuthUserProvider, MConst {
 			MUser user = new MUser();
 			user.setCode(1L);
 			user.setUsername(username);
-			user.setRoles(new String[] { "ADMIN", "CLIENT" });
+			user.setRoles(new String[] { "CLIENT" });
 
 			return user;
 		}
