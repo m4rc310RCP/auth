@@ -2,6 +2,7 @@ package br.com.m4rc310.auth.graphql.services;
 
 import java.util.Date;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.reactivestreams.Publisher;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 import br.com.m4rc310.auth.db.dto.RequestDeviceRegister;
 import br.com.m4rc310.auth.db.models.User;
 import br.com.m4rc310.auth.graphql.MConst;
-import br.com.m4rc310.auth.graphql.MEnumError;
 import foundation.cmo.opensales.graphql.mappers.annotations.MDate;
 import foundation.cmo.opensales.graphql.security.dto.MUser;
 import foundation.cmo.opensales.graphql.security.dto.MUserDetails;
@@ -90,6 +90,10 @@ public class AuthService extends MService implements MConst {
 		
 		if (fluxService.inPublish(RequestDeviceRegister.class, id)) {
 			RequestDeviceRegister register = getRequestDeviceRegister(code);
+			
+			String uuid = UUID.randomUUID().toString();
+			register.setDeviceId(uuid);
+			
 			fluxService.callPublish(RequestDeviceRegister.class, id, register);
 			resetCache(code);
 			return register;
