@@ -14,7 +14,6 @@ import br.com.m4rc310.auth.db.dto.RequestDeviceRegister;
 import br.com.m4rc310.auth.db.models.User;
 import br.com.m4rc310.auth.graphql.MConst;
 import foundation.cmo.opensales.graphql.mappers.annotations.MDate;
-import foundation.cmo.opensales.graphql.security.MAuth;
 import foundation.cmo.opensales.graphql.security.dto.MUser;
 import foundation.cmo.opensales.graphql.security.dto.MUserDetails;
 import io.leangen.graphql.annotations.GraphQLArgument;
@@ -32,7 +31,7 @@ public class AuthService extends MService implements MConst {
 	private static final String FLUX_REGISTER_DEVICE = "flux_gegister_device";
 	
 	@MDate
-	@MAuth(rolesRequired = "CLIENT")
+	//@MAuth(rolesRequired = "CLIENT")
 	@GraphQLQuery(name = "test")
 	public Date test() {
 		return new Date();
