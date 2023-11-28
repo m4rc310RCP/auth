@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import br.com.m4rc310.auth.db.dto.RequestDeviceRegister;
 import br.com.m4rc310.auth.db.models.User;
 import br.com.m4rc310.auth.graphql.MConst;
+import br.com.m4rc310.auth.graphql.MEnumError;
 import foundation.cmo.opensales.graphql.mappers.annotations.MDate;
 import foundation.cmo.opensales.graphql.security.dto.MUser;
 import foundation.cmo.opensales.graphql.security.dto.MUserDetails;
@@ -94,7 +95,7 @@ public class AuthService extends MService implements MConst {
 			return register;
 		}
 		
-		return null;
+		throw getException(ERROR$invalid_code_register, code);
 	}
 	
 	@Cacheable(value = "device_request", key = "#code")

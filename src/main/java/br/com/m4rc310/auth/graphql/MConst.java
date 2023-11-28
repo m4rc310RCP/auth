@@ -29,5 +29,6 @@ public interface MConst {
 	public static final String SUBSCRIPTION$device_register          = "${subscription.device.register}";
 	public static final String TYPE$auth_user                        = "${type.auth.user}";
 	public static final String TYPE$registry                         = "${type.registry}";
+	public static final String ERROR$invalid_code_register  = "${error.invalid.code.register}";
 }
 
