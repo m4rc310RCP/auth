@@ -13,6 +13,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import br.com.m4rc310.auth.db.dto.RequestDeviceRegister;
 import br.com.m4rc310.auth.db.models.User;
 import br.com.m4rc310.auth.graphql.MConst;
@@ -87,7 +91,11 @@ public class AuthService extends MService implements MConst {
 		}
 	}
 	
-	
+	public static void main(String[] args) throws JsonMappingException, JsonProcessingException {
+		String json = "{\"username\":\"client\",\"roles\":[\"CLIENT\"]}";
+		MUser user = new ObjectMapper().readValue(json, MUser.class);
+		log.info(user.getUsername());
+	}
 
 	@GraphQLQuery(name = "${list.roles}")
 	public String[] getRoles(@GraphQLContext User user) {
