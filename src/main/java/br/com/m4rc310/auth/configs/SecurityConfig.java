@@ -13,24 +13,37 @@ import foundation.cmo.opensales.graphql.security.MAuthToken;
 import foundation.cmo.opensales.graphql.security.MEnumToken;
 import foundation.cmo.opensales.graphql.security.MGraphQLJwtService;
 import foundation.cmo.opensales.graphql.security.dto.MUser;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+/**
+ * The Class SecurityConfig.
+ */
 @Configuration
 @EnableCaching
 public class SecurityConfig implements IMAuthUserProvider, MConst {
 
+	/**
+	 * Auth user.
+	 *
+	 * @param username the username
+	 * @param password the password
+	 * @return the m user
+	 * @throws Exception the exception
+	 */
 	@Override
 	public MUser authUser(String username, Object password) throws Exception {
-		log.info("auth: {}", username);
 		return null;
 	}
 
+	/**
+	 * Gets the user from username.
+	 *
+	 * @param username the username
+	 * @return the user from username
+	 */
 	@Override
 	@Cacheable(cacheNames = "username")
 	public MUser getUserFromUsername(String username) {
 
-		log.info("Username: {}", username);
 		if ("mlsilva".equals(username)) {
 			MUser user = new MUser();
 			user.setCode(1L);
@@ -43,10 +56,18 @@ public class SecurityConfig implements IMAuthUserProvider, MConst {
 		return null;
 	}
 
+	/**
+	 * Load user.
+	 *
+	 * @param jwt   the jwt
+	 * @param type  the type
+	 * @param token the token
+	 * @return the m user
+	 * @throws MException the m exception
+	 */
 	@Override
 	@Cacheable(cacheNames = "user", key = "#token")
 	public MUser loadUser(MGraphQLJwtService jwt, MEnumToken type, String token) throws MException {
-
 		String username;
 		switch (type) {
 		case TEST:
@@ -65,7 +86,6 @@ public class SecurityConfig implements IMAuthUserProvider, MConst {
 			try {
 				user = jwt.userFromToken(token, MUser.class);
 				user.setRoles(new String[] {"CLIENT"});
-
 				if (!isValidUser(user)) {
 					throw MException.get(402, ERROR$access_unauthorized);
 				}
@@ -87,12 +107,24 @@ public class SecurityConfig implements IMAuthUserProvider, MConst {
 		throw MException.get(401, ERROR$access_unauthorized);
 	}
 
+	/**
+	 * Checks if is valid user.
+	 *
+	 * @param user the user
+	 * @return true, if is valid user
+	 */
 	@Override
 	public boolean isValidUser(MUser user) {
-		log.info("Valid: {}", user);
 		return true;
 	}
 
+	/**
+	 * Valid user access.
+	 *
+	 * @param authToken the auth token
+	 * @param roles     the roles
+	 * @throws MException the m exception
+	 */
 	@Override
 	public void validUserAccess(MAuthToken authToken, String[] roles) throws MException {
 		boolean isAuth = authToken.getAuthorities().stream()

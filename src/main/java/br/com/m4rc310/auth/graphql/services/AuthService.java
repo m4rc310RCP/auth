@@ -31,14 +31,21 @@ import io.leangen.graphql.annotations.GraphQLSubscription;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import lombok.extern.slf4j.Slf4j;
 
+/** The Constant log. */
 @Slf4j
 @Service
 @GraphQLApi
 @EnableCaching
 public class AuthService extends MService implements MConst {
-
+	
+	/** The Constant FLUX_REGISTER_DEVICE. */
 	private static final String FLUX_REGISTER_DEVICE = "flux_gegister_device";
 
+	/**
+	 * Test.
+	 *
+	 * @return the date
+	 */
 	@MDate
 	// @MAuth(rolesRequired = "CLIENT")
 	@GraphQLQuery(name = "test")
@@ -46,6 +53,13 @@ public class AuthService extends MService implements MConst {
 		return new Date();
 	}
 
+/**
+ * Auth user.
+ *
+ * @param hash the hash
+ * @return the user
+ * @throws Exception the exception
+ */
 //	@MAuth(rolesRequired = "CLIENT")
 	@GraphQLMutation(name = MUTATION$auth_user)
 	public User authUser(@GraphQLArgument(name = CODE$hash) String hash) throws Exception {
@@ -57,7 +71,6 @@ public class AuthService extends MService implements MConst {
 			int i = hash.indexOf(":");
 			String username = hash.substring(0, i);
 
-			log.info(username);
 
 //			Pattern pattern = Pattern.compile("\\[([a-fA-F0-9\\-]+)\\]");
 //			Matcher matcher = pattern.matcher(username);
@@ -72,13 +85,12 @@ public class AuthService extends MService implements MConst {
 //			log.info(key);
 
 			String password = hash.substring(i + 1);
-			password = jwt.decrypt(password);
+			//password = jwt.decrypt(password);
 			
-			log.info(password);
-
 			// password = jwt.decrypt(password);
 
-			// log.info(password);
+			log.info(passwordEncoder.encode("12345"));
+			log.info("Password Valid: {}", passwordEncoder.matches("12345", "$2a$10$IkiT6NUdtcq6wohpi4xaBeWSmBGzJ87oxOys6i1YG5Srt8JCyWWwe"));
 
 			User user = new User();
 			user.setUsername(username);
@@ -91,17 +103,29 @@ public class AuthService extends MService implements MConst {
 		}
 	}
 	
-	public static void main(String[] args) throws JsonMappingException, JsonProcessingException {
-		String json = "{\"username\":\"client\",\"roles\":[\"CLIENT\"]}";
-		MUser user = new ObjectMapper().readValue(json, MUser.class);
-		log.info(user.getUsername());
-	}
+//	public static void main(String[] args) throws JsonMappingException, JsonProcessingException {
+//		String json = "{\"username\":\"client\",\"roles\":[\"CLIENT\"]}";
+//		MUser user = new ObjectMapper().readValue(json, MUser.class);
+//		log.info(user.getUsername());
+//	}
 
-	@GraphQLQuery(name = "${list.roles}")
+	/**
+ * Gets the roles.
+ *
+ * @param user the user
+ * @return the roles
+ */
+@GraphQLQuery(name = LIST$roles)
 	public String[] getRoles(@GraphQLContext User user) {
 		return new String[] {"ADMIN"};
 	}
 	
+	/**
+	 * Gets the access token.
+	 *
+	 * @param user the user
+	 * @return the access token
+	 */
 	@GraphQLQuery(name = CODE$access_token, description = DESC$code_access_token)
 	public String getAccessToken(@GraphQLContext User user) {
 		MUser u = new MUser();
@@ -111,14 +135,27 @@ public class AuthService extends MService implements MConst {
 
 	// =========================
 
+	/**
+	 * Request register device.
+	 *
+	 * @return the publisher
+	 */
 	@GraphQLSubscription(name = SUBSCRIPTION$device_register)
 	public Publisher<RequestDeviceRegister> requestRegisterDevice() {
 		String code = getRandomNumber(5);
 		String id = String.format("%s_%s", FLUX_REGISTER_DEVICE, code);
 		RequestDeviceRegister resp = getRequestDeviceRegister(code);
+		
+		log.info("---> {}", userAuth());
 		return fluxService.publish(RequestDeviceRegister.class, id, resp);
 	}
 
+	/**
+	 * Gets the username register.
+	 *
+	 * @param rdr the rdr
+	 * @return the username register
+	 */
 	@GraphQLQuery(name = NAME$username)
 	public String getUsernameRegister(@GraphQLContext RequestDeviceRegister rdr) {
 		try {
@@ -129,6 +166,13 @@ public class AuthService extends MService implements MConst {
 		}
 	}
 
+	/**
+	 * Confirm request device register.
+	 *
+	 * @param code the code
+	 * @return the request device register
+	 * @throws Exception the exception
+	 */
 	@GraphQLMutation(name = MUTATION$confirm_register_device)
 	public RequestDeviceRegister confirmRequestDeviceRegister(@GraphQLArgument(name = CODE$request) String code)
 			throws Exception {
@@ -149,6 +193,12 @@ public class AuthService extends MService implements MConst {
 		throw getException(ERROR$invalid_code_register, code);
 	}
 
+	/**
+	 * Gets the request device register.
+	 *
+	 * @param code the code
+	 * @return the request device register
+	 */
 	@Cacheable(value = "device_request", key = "#code")
 	private RequestDeviceRegister getRequestDeviceRegister(String code) {
 		RequestDeviceRegister resp = new RequestDeviceRegister();
@@ -157,10 +207,21 @@ public class AuthService extends MService implements MConst {
 		return resp;
 	}
 
+	/**
+	 * Reset cache.
+	 *
+	 * @param code the code
+	 */
 	@CacheEvict(value = "device_request", key = "#code")
 	private void resetCache(String code) {
 	}
 
+	/**
+	 * Gets the random number.
+	 *
+	 * @param length the length
+	 * @return the random number
+	 */
 	private String getRandomNumber(int length) {
 		return new Random().ints(0, 10).limit(length).mapToObj(Integer::toString).collect(Collectors.joining());
 	}
