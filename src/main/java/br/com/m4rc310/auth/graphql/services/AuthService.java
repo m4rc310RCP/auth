@@ -3,8 +3,6 @@ package br.com.m4rc310.auth.graphql.services;
 import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.reactivestreams.Publisher;
@@ -13,14 +11,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import br.com.m4rc310.auth.db.dto.RequestDeviceRegister;
 import br.com.m4rc310.auth.db.models.User;
 import br.com.m4rc310.auth.graphql.MConst;
 import foundation.cmo.opensales.graphql.mappers.annotations.MDate;
+import foundation.cmo.opensales.graphql.security.MAuth;
 import foundation.cmo.opensales.graphql.security.dto.MUser;
 import foundation.cmo.opensales.graphql.security.dto.MUserDetails;
 import io.leangen.graphql.annotations.GraphQLArgument;
@@ -140,6 +135,7 @@ public class AuthService extends MService implements MConst {
 	 *
 	 * @return the publisher
 	 */
+	@MAuth(rolesRequired = "ADMIN")
 	@GraphQLSubscription(name = SUBSCRIPTION$device_register)
 	public Publisher<RequestDeviceRegister> requestRegisterDevice() {
 		String code = getRandomNumber(5);

@@ -35,7 +35,7 @@ public class MService implements MConst {
 	protected MGraphQLJwtService jwt;
 	
 	/** The m. */
-	@Autowired
+	@Autowired()
 	protected M m;
 	
 	/** The password encoder. */
