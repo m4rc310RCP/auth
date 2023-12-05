@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import br.com.m4rc310.auth.db.dto.RequestDeviceRegister;
 import br.com.m4rc310.auth.db.models.User;
 import br.com.m4rc310.auth.graphql.MConst;
+import foundation.cmo.opensales.graphql.exceptions.MException;
 import foundation.cmo.opensales.graphql.mappers.annotations.MDate;
 import foundation.cmo.opensales.graphql.security.MAuth;
 import foundation.cmo.opensales.graphql.security.dto.MUser;
@@ -44,8 +45,9 @@ public class AuthService extends MService implements MConst {
 	@MDate
 	// @MAuth(rolesRequired = "CLIENT")
 	@GraphQLQuery(name = "test")
-	public Date test() {
-		return new Date();
+	public Date test() throws MException {
+		throw new MException(0, "Error Test");
+		//return new Date();
 	}
 
 /**
@@ -137,7 +139,7 @@ public class AuthService extends MService implements MConst {
 	 */
 	@MAuth(rolesRequired = "ADMIN")
 	@GraphQLSubscription(name = SUBSCRIPTION$device_register)
-	public Publisher<RequestDeviceRegister> requestRegisterDevice() {
+	public Publisher<RequestDeviceRegister> requestRegisterDevice() throws MException{
 		String code = getRandomNumber(5);
 		String id = String.format("%s_%s", FLUX_REGISTER_DEVICE, code);
 		RequestDeviceRegister resp = getRequestDeviceRegister(code);
