@@ -11,4 +11,5 @@ public interface IRegistry {
 	 * @return the registry
 	 */
 	Registry getRegistry();
+	void setRegistry(Registry registry);
 }

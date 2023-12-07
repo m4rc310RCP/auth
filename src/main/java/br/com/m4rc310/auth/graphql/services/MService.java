@@ -2,8 +2,11 @@ package br.com.m4rc310.auth.graphql.services;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,9 +16,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.m4rc310.auth.db.models.IRegistry;
+import br.com.m4rc310.auth.db.models.Registry;
 import br.com.m4rc310.auth.db.models.User;
+import br.com.m4rc310.auth.db.repositories.RegistryRepository;
+import br.com.m4rc310.auth.db.repositories.UserRepository;
 import br.com.m4rc310.auth.graphql.MConst;
 import br.com.m4rc310.auth.graphql.MEnumError;
+import br.com.m4rc310.auth.services.UserCacheService;
 import foundation.cmo.opensales.graphql.messages.i18n.M;
 import foundation.cmo.opensales.graphql.security.MGraphQLJwtService;
 import foundation.cmo.opensales.graphql.security.dto.MUser;
@@ -25,26 +33,37 @@ import foundation.cmo.opensales.graphql.services.MFluxService;
  * The Class MService.
  */
 public class MService implements MConst {
-	
+
 	/** The flux service. */
 	@Autowired
 	protected MFluxService fluxService;
-	
+
 	/** The jwt. */
 	@Autowired
 	protected MGraphQLJwtService jwt;
-	
+
 	/** The m. */
 	@Autowired()
 	protected M m;
-	
+
 	/** The password encoder. */
 	@Autowired
 	protected PasswordEncoder passwordEncoder;
-	
+
 	/** The sa. */
 	protected String sa;
+
+	@Autowired
+	protected UserRepository userRepository;
 	
+	@Autowired
+	protected RegistryRepository registryRepository;
+	
+	
+	@Autowired
+	protected UserCacheService userCacheService;
+	
+
 	/**
 	 * From json.
 	 *
@@ -59,7 +78,7 @@ public class MService implements MConst {
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.readValue(json, type);
 	}
-	
+
 	/**
 	 * Gets the exception.
 	 *
@@ -70,7 +89,7 @@ public class MService implements MConst {
 	protected Exception getException(String message, Object... args) {
 		return new Exception(m.getString(message, args));
 	}
-	
+
 	/**
 	 * Gets the exception.
 	 *
@@ -78,7 +97,7 @@ public class MService implements MConst {
 	 * @return the exception
 	 */
 	protected Exception getException(MEnumError error) {
-		//return new Exception(m.getString(message, args));
+		// return new Exception(m.getString(message, args));
 		return new Exception();
 	}
 
@@ -117,16 +136,28 @@ public class MService implements MConst {
 	 * User auth.
 	 *
 	 * @return the user
+	 * @throws Exception 
 	 */
-	protected User userAuth() {
-		MUser authenticatedUser = fluxService.authenticatedUser();
-		if (authenticatedUser==null) {
-			return null;
-		}
+	@Transactional
+	protected User userAuth() throws Exception {
+		return userCacheService.getAuthUser(fluxService.authenticatedUser()).getId().getUser();
+	}
+
+	@Transactional
+	protected void putRegistryInfo(IRegistry entity) throws Exception{
 		
-		User user = new User();
-		user.setUsername(authenticatedUser.getUsername());	
-		return user;
-		}
-	
+			Registry registry = entity.getRegistry();
+			if (registry == null) {
+				registry = new Registry();
+				registry.setDateTransaction(new Date());
+				registry.setUser(userAuth());
+			}else {
+				registry.setDateChange(new Date());
+			}
+			
+			registry = registryRepository.save(registry);
+			
+			entity.setRegistry(registry);			
+	}
+
 }

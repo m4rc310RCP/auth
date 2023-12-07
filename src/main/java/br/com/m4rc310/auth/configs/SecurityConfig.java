@@ -6,7 +6,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 
+import br.com.m4rc310.auth.db.models.User;
 import br.com.m4rc310.auth.graphql.MConst;
+import br.com.m4rc310.auth.services.UserCacheService;
 import foundation.cmo.opensales.graphql.exceptions.MException;
 import foundation.cmo.opensales.graphql.messages.i18n.M;
 import foundation.cmo.opensales.graphql.security.IMAuthUserProvider;
@@ -14,16 +16,20 @@ import foundation.cmo.opensales.graphql.security.MAuthToken;
 import foundation.cmo.opensales.graphql.security.MEnumToken;
 import foundation.cmo.opensales.graphql.security.MGraphQLJwtService;
 import foundation.cmo.opensales.graphql.security.dto.MUser;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class SecurityConfig.
  */
+@Slf4j
 @Configuration
 @EnableCaching
 public class SecurityConfig implements IMAuthUserProvider, MConst {
 	
 	//@Autowired(required = false)
 	private M m;
+	
+	private UserCacheService userCacheService;
 	
 	/**
 	 * Auth user.
@@ -42,6 +48,10 @@ public class SecurityConfig implements IMAuthUserProvider, MConst {
 	public void setMessage(M m) {
 		this.m = m;
 	}
+	
+	public void setUserCacheService(UserCacheService userCacheService) {
+		this.userCacheService = userCacheService;
+	}
 
 	/**
 	 * Gets the user from username.
@@ -50,19 +60,12 @@ public class SecurityConfig implements IMAuthUserProvider, MConst {
 	 * @return the user from username
 	 */
 	@Override
-	@Cacheable(cacheNames = "username")
 	public MUser getUserFromUsername(String username) {
-
-		if ("mlsilva".equals(username)) {
-			MUser user = new MUser();
-			user.setCode(1L);
-			user.setUsername(username);
-			user.setRoles(new String[] { "CLIENT" });
-
-			return user;
+		try {
+			return userCacheService.getMUser(username);
+		} catch (Exception e) {
+			return null;
 		}
-
-		return null;
 	}
 
 	/**
@@ -83,22 +86,21 @@ public class SecurityConfig implements IMAuthUserProvider, MConst {
 			int i = token.indexOf(":");
 			String sid = token.substring(0, i);
 			Long id = Long.parseLong(sid);
-			String login = token.substring(i + 1);
+			username = token.substring(i + 1);
 			MUser user = new MUser();
 			user.setRequestId(sid);
-			user.setUsername(login);
+			user.setUsername(username);
 			user.setCode(id);
 
 			user.setRoles(new String[] { "ADMIN" });
 			return user;
 		case BASIC:
 			try {
-				user = jwt.userFromToken(token, MUser.class);
-				user.setRoles(new String[] {"CLIENT"});
-				if (!isValidUser(user)) {
-					throw getWebException(402, ERROR$access_unauthorized);
-				}
-				return user;
+				token = jwt.decrypt(token);
+				i = token.indexOf(":");
+				username = token.substring(1, i);
+				String hash = token.substring(i + 1);
+				return  userCacheService.authenticate(username, hash);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

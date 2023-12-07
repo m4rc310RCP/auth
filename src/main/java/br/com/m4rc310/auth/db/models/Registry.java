@@ -33,12 +33,15 @@ public class Registry implements Serializable, MConst {
 	@GraphQLQuery(name = CODE$registry)
 	private Long id;
 
-	/** The user. */
 	@ManyToOne
 	@JoinColumn(name = NAME$username)
 	private User user;
 
-	@Column(name = "${date.transaction}")
-	@GraphQLQuery(name = "${date.transaction}")
+	@Column(name = DATE$transaction)
+	@GraphQLQuery(name = DATE$transaction, description = DESC$date_transaction)
 	private Date dateTransaction;
+	
+	@Column(name = DATE$change)
+	@GraphQLQuery(name = DATE$change)
+	private Date dateChange;
 }

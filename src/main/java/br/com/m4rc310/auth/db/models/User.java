@@ -2,8 +2,10 @@ package br.com.m4rc310.auth.db.models;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -18,8 +20,8 @@ import lombok.Data;
  * Instantiates a new user.
  */
 @Data
-@Entity(name = MConst.TYPE$auth_user)
-@GraphQLType(name = MConst.TYPE$auth_user, description = MConst.DESC$type_auth_user)
+@Entity(name = MConst.TYPE$user)
+@GraphQLType(name = MConst.TYPE$user)
 public class User implements Serializable, MConst, IRegistry {
 	
 	private static final long serialVersionUID = 1568396898330354858L;
@@ -29,11 +31,7 @@ public class User implements Serializable, MConst, IRegistry {
 	@GraphQLQuery(name = NAME$username, description = DESC$name_username)
 	private String username;
 	
-	@Column(name = DESCRIPTION$password)
-	@GraphQLIgnore
-	private String password;
-	
-	@OneToOne
+	@OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 	@JoinColumn(name = CODE$registry)
 	@GraphQLIgnore
 	private Registry registry;
