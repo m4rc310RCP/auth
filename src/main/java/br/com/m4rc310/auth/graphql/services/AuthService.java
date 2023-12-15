@@ -62,7 +62,6 @@ public class AuthService extends MService implements MConst {
 //	@MAuth(rolesRequired = "CLIENT")
 	@GraphQLMutation(name = MUTATION$auth_user)
 	public User authUser(@GraphQLArgument(name = CODE$hash) String hash) throws Exception {
-		try {
 
 			hash = jwt.decrypt(hash);
 			hash = hash.replace("\"", "");
@@ -96,10 +95,7 @@ public class AuthService extends MService implements MConst {
 			// user.setPassword(password);
 
 			return user;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+		
 	}
 
 //	public static void main(String[] args) throws JsonMappingException, JsonProcessingException {
