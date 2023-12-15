@@ -72,6 +72,7 @@ public class UserCacheService implements MConst {
 
 				log.info(token);
 
+
 				authUserRepository.save(auth);
 			}
 		} catch (Exception e) {
