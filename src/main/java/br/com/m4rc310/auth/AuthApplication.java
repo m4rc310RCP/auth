@@ -14,9 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @PropertySource(ignoreResourceNotFound = true, value = "classpath:/security.properties")
 public class AuthApplication {
 	
-	
-	
-
 	public static void main(String[] args) {
 		SpringApplication.run(AuthApplication.class, args);
 	}

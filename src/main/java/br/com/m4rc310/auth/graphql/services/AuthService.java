@@ -48,8 +48,8 @@ public class AuthService extends MService implements MConst {
 	// @MAuth(rolesRequired = "CLIENT")
 	@GraphQLQuery(name = "test")
 	public Date test() throws MException {
-		throw new MException(0, "Error Test");
-		// return new Date();
+		//throw new MException(0, "Error Test");
+		 return new Date();
 	}
 
 	/**
@@ -138,12 +138,19 @@ public class AuthService extends MService implements MConst {
 	 */
 	@MAuth(rolesRequired = "ADMIN")
 	@GraphQLSubscription(name = SUBSCRIPTION$device_register)
-	public Publisher<RequestDeviceRegister> requestRegisterDevice() throws Exception {
+	public Publisher<RequestDeviceRegister> requestRegisterDevice()  {
+		try {
+			
+		log.info(FLUX_REGISTER_DEVICE);
 		String code = getRandomNumber(4);
 		String id = String.format("%s_%s", FLUX_REGISTER_DEVICE, code);
 		RequestDeviceRegister resp = getRequestDeviceRegister(code);
 
 		return fluxService.publish(RequestDeviceRegister.class, id, resp);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**

@@ -2,11 +2,11 @@ package br.com.m4rc310.auth.configs;
 
 import java.util.Arrays;
 
+import org.jfree.util.Log;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 
-import br.com.m4rc310.auth.db.models.User;
 import br.com.m4rc310.auth.graphql.MConst;
 import br.com.m4rc310.auth.services.UserCacheService;
 import foundation.cmo.opensales.graphql.exceptions.MException;
@@ -41,6 +41,8 @@ public class SecurityConfig implements IMAuthUserProvider, MConst {
 	 */
 	@Override
 	public MUser authUser(String username, Object password) throws Exception {
+		log.info(username);
+		
 		return null;
 	}
 	
@@ -91,7 +93,6 @@ public class SecurityConfig implements IMAuthUserProvider, MConst {
 			user.setRequestId(sid);
 			user.setUsername(username);
 			user.setCode(id);
-
 			user.setRoles(new String[] { "ADMIN" });
 			return user;
 		case BASIC:

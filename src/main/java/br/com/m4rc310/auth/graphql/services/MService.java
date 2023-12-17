@@ -26,7 +26,6 @@ import br.com.m4rc310.auth.graphql.MEnumError;
 import br.com.m4rc310.auth.services.UserCacheService;
 import foundation.cmo.opensales.graphql.messages.i18n.M;
 import foundation.cmo.opensales.graphql.security.MGraphQLJwtService;
-import foundation.cmo.opensales.graphql.security.dto.MUser;
 import foundation.cmo.opensales.graphql.services.MFluxService;
 
 /**
